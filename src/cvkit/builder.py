@@ -196,11 +196,29 @@ def resolve_assets(cv: CV, base_dir: str | Path) -> list[str]:
         if not value:
             continue
         path = Path(value)
-        if path.is_absolute() and path.exists():
+        if path.is_absolute():
+            # An absolute path is validated too: a file that exists but is not an
+            # image must be reported, not passed on to fail later with a worse error.
+            if path.exists():
+                from .docx_kit import is_readable_image
+
+                readable, why = is_readable_image(path)
+                if not readable:
+                    setattr(cv.contact, attribute, "")
+                    missing.append(f"{value} ({why})")
+            else:
+                missing.append(value)
             continue
         for candidate in (base / path, base / path.name, path):
             if candidate.exists():
-                setattr(cv.contact, attribute, str(candidate.resolve()))
+                from .docx_kit import is_readable_image
+
+                readable, why = is_readable_image(candidate)
+                if readable:
+                    setattr(cv.contact, attribute, str(candidate.resolve()))
+                else:
+                    setattr(cv.contact, attribute, "")
+                    missing.append(f"{value} ({why})")
                 break
         else:
             missing.append(value)

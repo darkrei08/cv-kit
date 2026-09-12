@@ -14,9 +14,10 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Mm, Pt, RGBColor
 
 from .docx_kit import (
-    body_row, bullet, cell_shade, centred_image, clear_cell, ensure_cell_content,
-    fixed_layout, header_row, keep_rows_together, make_style, page_break, para,
-    para_border, para_shade, rich, tab_right,
+    add_picture_safely, body_row, bullet, cell_shade, centred_image, clear_cell,
+    ensure_cell_content, fixed_layout, header_row, is_readable_image,
+    keep_rows_together, make_style, page_break, para, para_border, para_shade, rich,
+    tab_right,
 )
 from .model import CV, Finding, validate
 from .theme import Preset
@@ -404,17 +405,21 @@ def _bullets(parent, items, styles, p: Preset):
 
 def _signature_block(doc, cv: CV, styles, p: Preset):
     signature = cv.contact.signature
-    if signature and os.path.exists(signature):
+    if signature:
         paragraph = doc.add_paragraph()
         paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-        paragraph.add_run().add_picture(signature, width=Mm(26))
+        if not add_picture_safely(paragraph, signature, 26):
+            paragraph.clear() if hasattr(paragraph, "clear") else None
     para(doc, cv.contact.name, style=styles["small"], bold=True,
          align=WD_ALIGN_PARAGRAPH.RIGHT, color=p.palette.primary)
 
 
 def _designed_header(doc, cv: CV, styles, p: Preset, width: float):
     contact = cv.contact
-    photo = contact.photo if contact.photo and os.path.exists(contact.photo) else None
+    photo = None
+    if contact.photo:
+        readable, _ = is_readable_image(contact.photo)
+        photo = contact.photo if readable else None
     table = doc.add_table(rows=1, cols=2)
     table.autofit = False
     fixed_layout(table)
@@ -428,7 +433,7 @@ def _designed_header(doc, cv: CV, styles, p: Preset, width: float):
         first = right.add_paragraph()
         first.alignment = WD_ALIGN_PARAGRAPH.RIGHT
         first.paragraph_format.space_after = Pt(0)
-        first.add_run().add_picture(photo, width=Mm(min(24.0, photo_column - 4)))
+        add_picture_safely(first, photo, min(24.0, photo_column - 4))
     para(left, contact.name, style=styles["name"], after=0)
     if contact.headline:
         para(left, contact.headline, style=styles["headline"])
@@ -517,7 +522,8 @@ def _designed_footer(doc, cv: CV, styles, p: Preset, width: float):
         paragraph = para(doc, text, style=styles["small"], before=3)
         para_border(paragraph, "top", p.palette.rule, 6, 5)
     signature = cv.contact.signature
-    if (signature and os.path.exists(signature)) or cv.contact.place_date:
+    readable = bool(signature) and is_readable_image(signature)[0]
+    if readable or cv.contact.place_date:
         table = doc.add_table(rows=1, cols=2)
         table.autofit = False
         fixed_layout(table)
@@ -527,10 +533,10 @@ def _designed_footer(doc, cv: CV, styles, p: Preset, width: float):
         right.width = half
         if cv.contact.place_date:
             para(left, cv.contact.place_date, size=9.5, after=0)
-        if signature and os.path.exists(signature):
+        if readable:
             paragraph = right.paragraphs[0]
             paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-            paragraph.add_run().add_picture(signature, width=Mm(26))
+            add_picture_safely(paragraph, signature, 26)
         para(right, cv.contact.name, size=9, bold=True, color=p.palette.primary,
              align=WD_ALIGN_PARAGRAPH.CENTER, after=0)
         ensure_cell_content(table)

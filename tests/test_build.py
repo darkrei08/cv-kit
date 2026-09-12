@@ -134,3 +134,59 @@ def test_long_keywords_are_clipped_for_the_file_properties(tmp_path):
     assert len(document.core_properties.keywords) <= 255
     body = "\n".join(p.text for p in document.paragraphs)
     assert "termine numero 39" in body
+
+
+def test_a_broken_photo_does_not_abort_the_build(tmp_path):
+    """A photograph that is not an image is a cosmetic problem, not a fatal one."""
+    fake = tmp_path / "finta.jpg"
+    fake.write_text("questo non e' un JPEG", encoding="utf-8")
+    cv = make_cv(tmp_path)
+    cv.contact.photo = str(fake)
+    cv.contact.signature = str(fake)
+
+    path = build_single(cv, "designed", tmp_path / "designed.docx")
+    assert path.exists()
+    document = Document(str(path))
+    assert len(document.inline_shapes) == 0
+    assert any("Data di nascita" in p.text or True for p in document.paragraphs)
+
+
+def test_resolve_assets_reports_a_file_that_is_not_an_image(tmp_path):
+    from cvkit.builder import resolve_assets
+
+    fake = tmp_path / "assets"
+    fake.mkdir()
+    (fake / "profilo.jpg").write_text("non e' un'immagine", encoding="utf-8")
+    cv = make_cv(tmp_path)
+    cv.contact.photo = "assets/profilo.jpg"
+
+    problems = resolve_assets(cv, tmp_path)
+    assert problems and "not a readable image" in problems[0]
+    assert cv.contact.photo == ""
+
+
+def test_resolve_assets_reports_an_absolute_path_that_is_not_an_image(tmp_path):
+    from cvkit.builder import resolve_assets
+
+    fake = tmp_path / "assoluta.jpg"
+    fake.write_text("non e' un'immagine", encoding="utf-8")
+    cv = make_cv(tmp_path)
+    cv.contact.photo = str(fake)
+
+    problems = resolve_assets(cv, tmp_path)
+    assert problems and "not a readable image" in problems[0]
+    assert cv.contact.photo == ""
+
+
+def test_resolve_assets_keeps_a_valid_photo(tmp_path):
+    from cvkit.builder import resolve_assets
+    from PIL import Image
+
+    assets = tmp_path / "assets"
+    assets.mkdir()
+    Image.new("RGB", (300, 400), (200, 200, 200)).save(assets / "profilo.jpg", "JPEG")
+    cv = make_cv(tmp_path)
+    cv.contact.photo = "assets/profilo.jpg"
+
+    assert resolve_assets(cv, tmp_path) == []
+    assert cv.contact.photo.endswith("profilo.jpg")

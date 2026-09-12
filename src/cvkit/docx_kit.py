@@ -8,6 +8,8 @@ shading, fixed table layout), and they are worth testing on their own.
 """
 from __future__ import annotations
 
+from pathlib import Path
+
 from docx.enum.style import WD_STYLE_TYPE
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK, WD_TAB_ALIGNMENT
 from docx.oxml import OxmlElement
@@ -320,6 +322,39 @@ def body_row(cells, widths_mm, values, size: float = 8.5, fill: str | None = Non
 # ---------------------------------------------------------------------------
 # Images
 # ---------------------------------------------------------------------------
+def is_readable_image(path: str | Path) -> tuple[bool, str]:
+    """Say whether a file can be used as an image, and why not when it cannot.
+
+    python-docx raises ``UnrecognizedImageError`` with an empty message, which tells a
+    user nothing at all. Checking first turns that into a sentence naming the file.
+    """
+    path = Path(path)
+    if not path.exists():
+        return False, "file not found"
+    try:
+        with Image.open(path) as probe:
+            probe.verify()
+    except Exception as exc:
+        return False, f"not a readable image ({type(exc).__name__})"
+    return True, ""
+
+
+def add_picture_safely(paragraph, path: str | Path, width_mm: float) -> bool:
+    """Add a picture, or report that it could not be added. Never raises.
+
+    A broken or missing photograph is a cosmetic problem: it must not abort the build
+    of a document whose factual content is fine.
+    """
+    ok, _ = is_readable_image(path)
+    if not ok:
+        return False
+    try:
+        paragraph.add_run().add_picture(str(path), width=Mm(width_mm))
+    except Exception:
+        return False
+    return True
+
+
 def prepare_photo(src: str, dst: str, size: tuple[int, int] = (413, 531),
                   sharpen: bool = True) -> str:
     """Crop to a portrait ratio, upscale with Lanczos, sharpen, save at 300 dpi.
