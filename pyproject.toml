@@ -1,0 +1,65 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cvkit"
+version = "0.1.0"
+description = "Build one CV as structured data and export every variant a job search needs: ATS-plain, designed, English, cover letters, appendix."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "darkrei08" }]
+keywords = ["cv", "resume", "docx", "ats", "europass", "python-docx"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: End Users/Desktop",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Office/Business :: Office Suites",
+  "Topic :: Text Processing :: Markup",
+]
+dependencies = [
+  "python-docx>=1.1",
+  "pillow>=10",
+]
+
+[project.optional-dependencies]
+qa = ["pymupdf>=1.24"]
+html = ["weasyprint>=62"]
+pdf = ["docx2pdf>=0.1.8; platform_system == 'Windows' or platform_system == 'Darwin'"]
+all = ["cvkit[qa,html,pdf]"]
+dev = ["pytest>=8", "pytest-cov>=5", "ruff>=0.6"]
+
+[project.scripts]
+cvkit = "cvkit.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/darkrei08/cv-kit"
+Issues = "https://github.com/darkrei08/cv-kit/issues"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+cvkit = ["templates/*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

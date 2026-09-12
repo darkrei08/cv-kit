@@ -1,0 +1,130 @@
+/* cv-kit — ATS-plain stylesheet.
+ *
+ * One column, one family, black on white, no colour, no decorative rule. The
+ * values mirror cvkit.theme.ATS / ATS_TYPE so the HTML variant and the Word
+ * variant measure the same. Keep them in sync when you change one.
+ */
+
+@page {
+  size: A4;
+  margin: 14mm 16mm 14mm 16mm;
+}
+
+html {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10pt;
+  line-height: 1.10;
+  color: #000000;
+}
+
+body {
+  margin: 0;
+}
+
+h1 {
+  font-size: 19pt;
+  font-weight: bold;
+  margin: 0 0 1pt 0;
+  line-height: 1.0;
+}
+
+.cv-head {
+  border-bottom: 1.2pt solid #000000;
+  padding-bottom: 4pt;
+  margin-bottom: 8pt;
+}
+
+.headline {
+  font-size: 11pt;
+  font-weight: bold;
+  margin: 0;
+}
+
+.subheadline {
+  font-size: 9.5pt;
+  font-style: italic;
+  color: #333333;
+  margin: 0 0 3pt 0;
+}
+
+.contact {
+  font-size: 9.5pt;
+  color: #333333;
+  margin: 0;
+}
+
+h2 {
+  font-size: 10pt;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.2pt;
+  border-bottom: 0.6pt solid #8C8C8C;
+  margin: 8pt 0 3pt 0;
+  page-break-after: avoid;
+}
+
+h3 {
+  font-size: 10pt;
+  font-weight: bold;
+  margin: 5pt 0 0 0;
+  page-break-after: avoid;
+}
+
+.role {
+  font-size: 10pt;
+  margin: 0;
+}
+
+.role .sector {
+  color: #333333;
+}
+
+.meta {
+  font-size: 9pt;
+  color: #333333;
+  margin: 0 0 2pt 0;
+}
+
+p {
+  margin: 0 0 2pt 0;
+  text-align: left;   /* never justify: rivers of white space in a narrow column */
+}
+
+ul {
+  margin: 0 0 2pt 0;
+  padding-left: 5mm;
+  list-style-type: disc;
+}
+
+li {
+  margin: 0 0 1pt 0;
+  padding-left: 0;
+  page-break-inside: avoid;
+}
+
+li .lead {
+  font-weight: bold;
+}
+
+.job {
+  page-break-inside: avoid;
+}
+
+.small {
+  font-size: 8.5pt;
+  color: #333333;
+}
+
+.notice {
+  border-top: 0.6pt solid #8C8C8C;
+  padding-top: 4pt;
+  margin-top: 6pt;
+}
+
+/* Printing in black and white must not lose any information: nothing below uses
+ * colour as the only signal, and the greys are chosen to stay distinct when
+ * converted. */
+@media print {
+  html { font-size: 10pt; }
+  a { color: #000000; text-decoration: none; }
+}

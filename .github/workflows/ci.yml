@@ -1,0 +1,95 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: ${{ matrix.os }} / python ${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python: ["3.10", "3.11", "3.12", "3.13"]
+        exclude:
+          # Keep the matrix affordable: the newest and the oldest interpreter on
+          # every system still prove portability.
+          - os: macos-latest
+            python: "3.11"
+          - os: macos-latest
+            python: "3.13"
+          - os: windows-latest
+            python: "3.11"
+          - os: windows-latest
+            python: "3.13"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+
+      - name: Install the package
+        run: python -m pip install --upgrade pip && python -m pip install -e ".[dev,qa,html]"
+
+      - name: Unit tests
+        run: python -m pytest -q
+
+      - name: Report the environment
+        run: python -m cvkit doctor
+
+      - name: Build the demonstration CV without an office suite
+        run: python examples/demo/build.py --no-pdf
+
+  office:
+    name: PDF pipeline on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      # The PDF backends on each system. Word is not available on a hosted runner,
+      # so LibreOffice is the engine under test everywhere: it is the only backend
+      # that exists on all three systems, which is exactly the claim being checked.
+      - name: Install LibreOffice (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libreoffice-writer fonts-liberation
+
+      - name: Install LibreOffice (macOS)
+        if: runner.os == 'macOS'
+        run: brew install --cask libreoffice
+
+      - name: Install LibreOffice (Windows)
+        if: runner.os == 'Windows'
+        run: choco install libreoffice-fresh -y --no-progress
+
+      - name: Install the package
+        run: python -m pip install --upgrade pip && python -m pip install -e ".[dev,qa]"
+
+      - name: Build the demonstration CV and check every page
+        run: python examples/demo/build.py
+
+      - name: Upload the produced documents
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: demo-${{ matrix.os }}
+          path: examples/demo/out/
+          if-no-files-found: warn

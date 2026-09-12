@@ -1,0 +1,20 @@
+# Keep line endings out of the diff and out of cross-platform breakage.
+#
+# A repository that claims to work on Windows, Linux and macOS must not store the
+# line endings of the machine that happened to commit first. Text is stored with LF
+# and checked out with LF; the two Windows-only script formats need CRLF or the
+# shell refuses to run them.
+* text=auto eol=lf
+
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binary formats must never be normalised.
+*.docx binary
+*.doc binary
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.xlsx binary
