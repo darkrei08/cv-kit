@@ -103,6 +103,30 @@ def find_chrome() -> str | None:
     return None
 
 
+def cache_dir() -> Path:
+    """A per-user cache directory, per platform convention.
+
+    Generated tool configuration belongs here rather than next to the documents: a
+    Puppeteer configuration file contains an absolute path to the browser and, on a
+    shared or exported output folder, that is a small piece of information about the
+    machine that produced the files.
+    """
+    if os.name == "nt":
+        base = os.environ.get("LOCALAPPDATA") or os.path.expanduser("~\\.cache")
+    elif sys_platform() == "darwin":
+        base = os.path.expanduser("~/Library/Caches")
+    else:
+        base = os.environ.get("XDG_CACHE_HOME") or os.path.expanduser("~/.cache")
+    path = Path(base) / "cvkit"
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+
+
+def sys_platform() -> str:
+    import sys
+    return sys.platform
+
+
 def write_puppeteer_config(path: str | Path, chrome: str | None = None) -> Path:
     """Write the JSON file Mermaid CLI needs to find a browser.
 
@@ -156,7 +180,7 @@ def render_mermaid(source: str, out_png: str | Path, *, source_path: str | Path 
     source_path.write_text(source, encoding="utf-8")
 
     if puppeteer_config is None:
-        candidate = out_png.parent / "puppeteer.json"
+        candidate = cache_dir() / "puppeteer.json"
         if not candidate.exists() and find_chrome():
             write_puppeteer_config(candidate)
         puppeteer_config = candidate if candidate.exists() else None

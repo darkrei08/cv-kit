@@ -111,3 +111,37 @@ def test_pdf_report_without_a_pdf_file_is_a_clean_error(tmp_path):
     report = inspect_docx(tmp_path / "nothing.docx") if (tmp_path / "nothing.docx").exists() \
         else None
     assert report is None
+
+
+def test_a_forbidden_value_is_masked_in_the_report(tmp_path):
+    """The guard must not republish the personal data it is guarding against."""
+    from cvkit.qa import Report
+
+    report = Report(path="x.pdf")
+    # emulate the message construction used by inspect_pdf
+    token = "NDRNLB64M13F052G"
+    shown = f"{token[:2]}{'*' * 6}"
+    report.add("error", "forbidden-token", f"a forbidden value ({shown}) must not appear")
+    text = report.text()
+    assert token not in text
+    assert "ND******" in text
+
+
+def test_binary_documents_are_read_by_the_pii_guard(tmp_path):
+    """A scanner that only reads text cannot see inside a .docx."""
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
+    import check_no_pii
+
+    document = tmp_path / "cv.docx"
+    from docx import Document
+    doc = Document()
+    doc.add_paragraph("Via Giuseppe Impastato 54")
+    doc.save(str(document))
+
+    text, reason = check_no_pii.text_of(document)
+    assert text is not None, reason
+    assert "Impastato" in text

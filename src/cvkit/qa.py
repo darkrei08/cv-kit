@@ -157,8 +157,12 @@ def inspect_pdf(path: str | Path, *, expect_pages: int | None = None,
 
     for token in forbid_tokens:
         if token and token.lower() in text.lower():
+            # Mask the value: the token is by definition personal data, and this message
+            # ends up in a build log, a CI transcript or an issue report. The guard
+            # must not republish what it is guarding against.
+            shown = f"{token[:2]}{'*' * 6}" if len(token) > 2 else "***"
             report.add("error", "forbidden-token",
-                       f"'{token}' must not appear in this variant")
+                       f"a forbidden value ({shown}) must not appear in this variant")
     report.words = len(text.split())
     return report
 
