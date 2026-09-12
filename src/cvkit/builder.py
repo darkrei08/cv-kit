@@ -120,6 +120,7 @@ def build_master(cv: CV, path: str | Path, *, parts=PART_ORDER, include_notes: b
                  translations: dict[str, CV] | None = None) -> Path:
     """One file with every part, each starting on a new page."""
     path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
     doc = new_document(make_preset("designed"))
     set_metadata(doc, title or f"Fascicolo curriculum vitae – {cv.contact.name}",
                  author or cv.contact.name, cv.keywords)
@@ -154,6 +155,9 @@ def build_single(cv: CV, part: str, path: str | Path, *, timeline_png: str | Non
     if part not in PART_BUILDERS:
         raise ValueError(f"unknown part '{part}'; choose from {', '.join(PART_ORDER)}")
     path = Path(path)
+    # Create the directory: a caller that names an output folder expects the file to
+    # appear there, not a FileNotFoundError from three layers down.
+    path.parent.mkdir(parents=True, exist_ok=True)
     preset = make_preset(PART_PRESETS[part])
     doc = new_document(preset, margins=_tight_margins(preset))
     set_metadata(doc, title or f"Curriculum vitae – {cv.contact.name}",

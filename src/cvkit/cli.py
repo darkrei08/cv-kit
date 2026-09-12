@@ -20,7 +20,7 @@ import sys
 from pathlib import Path
 
 from . import exporters
-from .builder import DEFAULT_PLAN, build_all, build_single
+from .builder import DEFAULT_PLAN, build_all, build_single, resolve_assets
 from .exporters import export_text
 from .model import CV
 from .qa import default_forbidden_tokens, qa_cv
@@ -276,6 +276,9 @@ def cmd_html(args) -> int:
 def cmd_single(args) -> int:
     directory, cv, translations, timeline = load_project(args.directory)
     out = Path(args.output) / f"cv-{args.part}.docx"
+    # Asset paths in the data file are relative to it; resolve them so a photo is
+    # never silently missing from the produced document.
+    resolve_assets(cv, directory)
     build_single(cv, args.part, out)
     print(f"written {out}")
     return 0
