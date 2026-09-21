@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Assemble documents from a CV.
 
 Two shapes matter:
@@ -12,7 +11,6 @@ Both are produced from the same builders, so they cannot disagree.
 """
 from __future__ import annotations
 
-import os
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -24,7 +22,11 @@ from .model import CV
 from .theme import Preset
 from .theme import preset as make_preset
 from .variants import (
-    build_appendix, build_ats, build_designed, build_letters, build_motivation,
+    build_appendix,
+    build_ats,
+    build_designed,
+    build_letters,
+    build_motivation,
     build_notes,
 )
 

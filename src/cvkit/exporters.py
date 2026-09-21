@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Export a built document to the formats a job application actually needs.
 
 PDF export is the one genuinely platform-specific step in the whole pipeline,
@@ -154,7 +153,8 @@ def _export_with_libreoffice(docx: Path, pdf: Path) -> None:
         raise RuntimeError("LibreOffice is not installed")
     docx = docx.resolve()
     pdf = pdf.resolve()
-    with tempfile.TemporaryDirectory() as tmp:
+    pdf.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(dir=str(pdf.parent)) as tmp:
         result = subprocess.run(
             [soffice, "--headless", "--norestore", "--convert-to", "pdf",
              "--outdir", tmp, str(docx)],
@@ -257,7 +257,7 @@ def _text_fallback(docx: Path, txt: Path) -> None:
 
 def export_html_pdf(cv, html_path: str | Path, pdf_path: str | Path | None = None):
     """Render the HTML/CSS variant to PDF with WeasyPrint, when installed."""
-    from .html_render import render_html, html_to_pdf
+    from .html_render import html_to_pdf, render_html
 
     html_path = Path(html_path)
     render_html(cv, html_path)

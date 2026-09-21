@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Tests for the command line interface.
 
 These run the real command in a subprocess, because the usage that broke in CI was

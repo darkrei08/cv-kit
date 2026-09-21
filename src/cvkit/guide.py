@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The guide and cover parts of a dossier.
 
 These two parts are not sent to an employer: they tell the candidate which file to
@@ -12,11 +11,16 @@ channels change and a package cannot track every job board.
 from __future__ import annotations
 
 from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.shared import Mm, Pt
+from docx.shared import Mm
 
 from .docx_kit import (
-    cell_shade, fixed_layout, header_row, body_row, keep_rows_together, page_break,
-    para, para_border, para_shade, table_widths,
+    body_row,
+    fixed_layout,
+    header_row,
+    keep_rows_together,
+    para,
+    para_border,
+    para_shade,
 )
 from .model import CV
 from .theme import Preset

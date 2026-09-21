@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
 """Tests for the data model and its validation rules."""
-from cvkit.model import CV, Contact, Education, Job, LABELS, Language, validate
+from cvkit.model import CV, LABELS, Contact, Education, Job, Language, validate
 
 
 def minimal(**overrides) -> CV:

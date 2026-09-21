@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Low-level Word primitives.
 
 Everything here is a thin, explicit wrapper over python-docx and raw OOXML. It is
@@ -291,13 +290,13 @@ def keep_rows_together(table):
 
 def table_widths(table, widths_mm) -> None:
     for row in table.rows:
-        for cell, width in zip(row.cells, widths_mm):
+        for cell, width in zip(row.cells, widths_mm, strict=True):
             cell.width = Mm(width)
 
 
 def header_row(cells, widths_mm, labels, fill: str, size: float = 8.5) -> None:
     """Shade a table's first row and write white bold labels into it."""
-    for cell, width, label in zip(cells, widths_mm, labels):
+    for cell, width, label in zip(cells, widths_mm, labels, strict=True):
         cell.width = Mm(width)
         cell_shade(cell, fill)
         paragraph = cell.paragraphs[0]
@@ -309,7 +308,7 @@ def header_row(cells, widths_mm, labels, fill: str, size: float = 8.5) -> None:
 
 
 def body_row(cells, widths_mm, values, size: float = 8.5, fill: str | None = None) -> None:
-    for cell, width, value in zip(cells, widths_mm, values):
+    for cell, width, value in zip(cells, widths_mm, values, strict=True):
         cell.width = Mm(width)
         if fill:
             cell_shade(cell, fill)

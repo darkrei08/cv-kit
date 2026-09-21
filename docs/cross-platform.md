@@ -33,7 +33,20 @@ as passed.
 | all | `libreoffice` | see below |
 
 `cvkit build` probes the backends in that order and uses the first one that works.
-`cvkit doctor` prints which ones this machine has.
+`cvkit doctor` prints which ones this machine has. On Linux, LibreOffice is the
+supported PDF backend; Word and `docx2pdf` are not expected to work there.
+
+If a native Linux package is not available, the Flatpak build is a supported
+alternative:
+
+```bash
+flatpak install flathub org.libreoffice.LibreOffice
+```
+
+Expose `flatpak run org.libreoffice.LibreOffice` as a `soffice` command on `PATH`
+so `cvkit` can discover it. Keep the output PDF under the project or home directory,
+not `/tmp`: the exporter creates LibreOffice's temporary conversion directory beside
+the destination PDF so the Flatpak can access it.
 
 ### PDF export, without any office suite
 

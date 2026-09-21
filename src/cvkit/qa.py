@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Automatic quality checks.
 
 A CV fails in ways that are invisible on screen and obvious to a parser or a

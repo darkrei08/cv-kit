@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """The document builders.
 
 One function per part. Every one takes a :class:`~cvkit.model.CV` and a docx
@@ -14,12 +13,25 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Mm, Pt, RGBColor
 
 from .docx_kit import (
-    add_picture_safely, body_row, bullet, cell_shade, centred_image, clear_cell,
-    ensure_cell_content, fixed_layout, header_row, is_readable_image,
-    keep_rows_together, make_style, page_break, para, para_border, para_shade, rich,
+    add_picture_safely,
+    body_row,
+    bullet,
+    centred_image,
+    clear_cell,
+    ensure_cell_content,
+    fixed_layout,
+    header_row,
+    is_readable_image,
+    keep_rows_together,
+    make_style,
+    page_break,
+    para,
+    para_border,
+    para_shade,
+    rich,
     tab_right,
 )
-from .model import CV, Finding, validate
+from .model import CV, Finding
 from .theme import Preset
 from .theme import preset as make_preset
 
@@ -456,7 +468,7 @@ def _personal_grid(doc, personal: dict[str, str], p: Preset, width: float):
     widths = (34.0, 48.0, 30.0, max(20.0, width - 112.0))
     for index in range(0, len(pairs), 2):
         row = grid.add_row()
-        for cell, cell_width in zip(row.cells, widths):
+        for cell, cell_width in zip(row.cells, widths, strict=True):
             cell.width = Mm(cell_width)
         for column, (label, value) in enumerate(pairs[index:index + 2]):
             for cell, text, bold in ((row.cells[column * 2], label, True),

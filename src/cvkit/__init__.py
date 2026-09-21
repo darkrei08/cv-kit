@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """cv-kit — build one CV as data and export every variant a job search needs.
 
 Typical use::
@@ -20,14 +19,28 @@ The pieces:
 * :mod:`cvkit.html_render` — the HTML/CSS route to PDF
 """
 from .builder import (
-    PART_ORDER, BuildResult, build_all, build_master, build_single, new_document,
+    PART_ORDER,
+    BuildResult,
+    build_all,
+    build_master,
+    build_single,
+    new_document,
     set_metadata,
 )
 from .model import (
-    LABELS, CV, Contact, Education, Finding, Job, Language, Letter, SkillGroup,
-    errors, validate,
+    CV,
+    LABELS,
+    Contact,
+    Education,
+    Finding,
+    Job,
+    Language,
+    Letter,
+    SkillGroup,
+    errors,
+    validate,
 )
-from .theme import PALETTES, PAGES, TYPES, Palette, PageSpec, Preset, TypeScale
+from .theme import PAGES, PALETTES, TYPES, PageSpec, Palette, Preset, TypeScale
 from .theme import preset as make_preset
 
 __version__ = "0.1.0"

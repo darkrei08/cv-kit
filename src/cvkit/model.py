@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Data model for a CV.
 
 The whole point of this package is that a CV is data, not a document. Everything a
@@ -13,9 +12,10 @@ discrimination risk.
 """
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 # ---------------------------------------------------------------------------
 # Section labels

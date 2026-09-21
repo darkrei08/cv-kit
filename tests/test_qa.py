@@ -1,13 +1,12 @@
-# -*- coding: utf-8 -*-
 """Tests for the quality checks and the export helpers."""
 from pathlib import Path
 
 from docx import Document
+from test_build import make_cv
 
 from cvkit.builder import _stem
 from cvkit.exporters import backends, export_text
 from cvkit.qa import default_forbidden_tokens, inspect_docx, qa_cv
-from test_build import make_cv
 
 
 def test_docx_with_a_table_fails_the_portal_check(tmp_path):
@@ -129,9 +128,7 @@ def test_a_forbidden_value_is_masked_in_the_report(tmp_path):
 
 def test_binary_documents_are_read_by_the_pii_guard(tmp_path):
     """A scanner that only reads text cannot see inside a .docx."""
-    import subprocess
     import sys
-    from pathlib import Path
 
     sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
     import check_no_pii

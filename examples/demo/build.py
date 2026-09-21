@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Build the demonstration CV and check the result.
 
 Run it directly to see the whole pipeline:

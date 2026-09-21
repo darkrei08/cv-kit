@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """A synthetic CV used by the test suite and by continuous integration.
 
 Every fact here is invented. The repository is public, so no real person, employer

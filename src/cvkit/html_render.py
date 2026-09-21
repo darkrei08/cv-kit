@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """HTML/CSS route to PDF.
 
 Why a second renderer exists at all: the Word route gives the best fidelity, but it

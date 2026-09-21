@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Allow ``python -m cvkit ...`` as an alternative to the console script.
 
 Both entry points must work: the ``cvkit`` command is created by the package

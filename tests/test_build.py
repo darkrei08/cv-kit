@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """End-to-end build tests. No office suite and no external service required."""
 from pathlib import Path
 
@@ -179,8 +178,9 @@ def test_resolve_assets_reports_an_absolute_path_that_is_not_an_image(tmp_path):
 
 
 def test_resolve_assets_keeps_a_valid_photo(tmp_path):
-    from cvkit.builder import resolve_assets
     from PIL import Image
+
+    from cvkit.builder import resolve_assets
 
     assets = tmp_path / "assets"
     assets.mkdir()

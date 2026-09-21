@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Diagrams through Mermaid CLI.
 
 A career timeline is the one graphic that earns its place on a CV: it shows

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Guard against publishing someone's personal data by accident.
 
 A repository that generates CVs is one careless commit away from containing a real

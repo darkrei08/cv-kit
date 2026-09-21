@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Command line interface.
 
     cvkit doctor                      what this machine can do
@@ -184,7 +183,7 @@ def cmd_build(args) -> int:
                        backend=args.backend, prefix=args.prefix,
                        asset_dir=directory)
     if args.text:
-        for name, spec in DEFAULT_PLAN.items():
+        for name, _spec in DEFAULT_PLAN.items():
             docx = result.files.get(f"{name}.docx")
             if docx:
                 result.add(f"{name}.txt", export_text(docx))
